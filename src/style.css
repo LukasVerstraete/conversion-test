@@ -1,4 +1,9 @@
-body,
-div,
-p {
+#app {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+#app p:active, #app p:focus, #app p:focus-within {
+    border: 1px solid #000;
 }

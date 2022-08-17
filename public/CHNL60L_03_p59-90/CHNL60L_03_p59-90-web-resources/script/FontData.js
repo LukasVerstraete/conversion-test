@@ -77,29 +77,32 @@ function buildFontRule(fontFamily, fontData, fontStyle, fontWeight, fontStretch)
 {
 	if(fontStyle)
 	{
-	returnValue = "@font-face { font-family:\"" + fontFamily + "\"; font-style:" + fontStyle + ";";
-	if(fontWeight)
-	{
-		returnValue += "font-weight:" + fontWeight + ";";
-	}
-	if(fontStretch)
-	{
-		returnValue += "font-stretch:" + fontStretch + ";";
-	}
+		let returnValue = "@font-face { font-family:\"" + fontFamily + "\"; font-style:" + fontStyle + ";";
+		if(fontWeight)
+		{
+			returnValue += "font-weight:" + fontWeight + ";";
+		}
+		if(fontStretch)
+		{
+			returnValue += "font-stretch:" + fontStretch + ";";
+		}
 
-	returnValue += "src:url(\"data:font/opentype;base64," + fontData + "\"); }";
-	return returnValue;
-	}
-	else 
-	{
-	return "";
+		returnValue += "src:url(\"data:font/opentype;base64," + fontData + "\"); }";
+		return returnValue;
+	} else {
+		return "";
 	}
 }
 
+const headElement = document.querySelector("head");
+
 for (var i in dataArray)
 {
-for (var j in fontStyle[i])
+	for (var j in fontStyle[i])
 	{
-		document.write("<style>" + buildFontRule(nameArray[i], dataArray[i], fontStyle[i][j], fontWeight[i], fontStretch[i]) + "</style>");
+		const styleElement = document.createElement("style");
+		styleElement.innerHTML = buildFontRule(nameArray[i], dataArray[i], fontStyle[i][j], fontWeight[i], fontStretch[i]);
+		headElement.appendChild(styleElement);
+		// document.write("<style>" + buildFontRule(nameArray[i], dataArray[i], fontStyle[i][j], fontWeight[i], fontStretch[i]) + "</style>");
 	}
 }
