@@ -6,14 +6,22 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<!-- Compiled and minified CSS -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
 
 		<!-- Compiled and minified JavaScript -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
 		<title>content picking POC</title>
 	</head>
 	<body>
-		<button id="start-button">Run</button>
+		<div class="controls">
+			<button id="delete-button" class="waves-effect btn">Delete</button>
+			<div class="">
+				<select id="font">
+					<option value="serif">Serif</option>
+					<option value="sans-serif">Sans-Serif</option>
+				</select>
+			</div>
+		</div>
 		<div id="app"></div>
 		<script type="module" src="/src/main.ts"></script>
 	</body>

@@ -1,3 +1,7 @@
+body {
+    display: flex;
+}
+
 #app {
     display: flex;
     justify-content: center;
@@ -5,5 +9,11 @@
 }
 
 #app p:active, #app p:focus, #app p:focus-within {
-    border: 1px solid #000;
+    border: 2px solid #000;
+    outline: 2px solid #000;
+    opacity: 1;
+}
+
+.controls {
+    padding: 1.5rem;
 }
