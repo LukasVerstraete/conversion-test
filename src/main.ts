@@ -140,6 +140,7 @@ type WordData = {
 	class: string;
 	left: string;
 	top: string;
+	width: number;
 };
 
 type ParagraphData = {
@@ -154,7 +155,24 @@ function fixParagraphs(rootElement: HTMLElement): void {
 		.forEach((paragraphElement: HTMLElement) => {
 			const paragraphData: ParagraphData = extractWordDataFromParagraph(paragraphElement);
 
+			const width: string = calculateParagraphWidth(paragraphData) + 'px';
+			console.log(width);
+
 			paragraphElement.innerHTML = '';
+
+			// paragraphData.element.style.top = paragraphData.words[0].top;
+			// paragraphData.element.style.left = paragraphData.words[0].left;
+			// paragraphData.element.style.position = 'absolute';
+			// paragraphData.element.style.maxWidth = width;
+			// paragraphData.element.style.whiteSpace = 'normal';
+			// paragraphData.element.classList.add(...paragraphData.mainClass.split(' '));
+
+			// paragraphData.words.forEach((word: WordData) => {
+			// 	const wordElement: string = word.class === paragraphData.mainClass 
+			// 		? ` ${word.word}`
+			// 		: ` <span class="${word.class}">${word.word}</span>`; 
+			// 	paragraphData.element.innerHTML += wordElement;
+			// });
 
 			const paragraphs: ParagraphData[] = splitUpParagraph(paragraphData);
 			console.log(paragraphs);
@@ -177,60 +195,30 @@ function fixParagraphs(rootElement: HTMLElement): void {
 					paragraphs[i - 1].element.insertAdjacentElement("afterend", paragraphs[i].element);
 				}
 			}
-
-			// const words: WordData[] = [];
-			// const spans: HTMLElement[] = Array.from(paragraph.querySelectorAll('span'));
-			// const exampleSpanIndex: number = spans[1] && spans[0].innerHTML.trim() === '' ? 1 : 0;
-			// const exampleSpan: HTMLElement = spans[exampleSpanIndex];
-			// const classNames: string[] = exampleSpan.className.split(' ');
-			// const leftPosition: string = exampleSpan.style.left;
-			// const topPositionMapping: string[] = [];
-			
-			// let paragraphCount = 0;
-			// let currentTopPosition: string = exampleSpan.style.top;
-
-			// spans
-			// 	.forEach((word: HTMLElement) => {
-			// 		if (currentTopPosition !== word.style.top) {
-			// 			paragraphCount++;
-			// 			currentTopPosition = word.style.top;
-			// 		}
-			// 		topPositionMapping.push(word.style.top);
-			// 		words.push({word: word.innerHTML, paragraph: paragraphCount, class: word.className});
-			// 		word.remove();
-			// 	});
-
-			// paragraph.classList.add(...classNames);
-			// paragraph.style.left = leftPosition;
-			// paragraph.style.top = topPositionMapping[exampleSpanIndex];
-			// paragraph.style.position = 'absolute';
-
-			// const paragraphs: HTMLElement[] = [paragraph];
-			// currentTopPosition = topPositionMapping[exampleSpanIndex];
-
-			// topPositionMapping.forEach((topPosition: string) => {
-			// 	if (topPosition !== currentTopPosition) {
-			// 		const newParagraph: HTMLElement = document.createElement('p');
-			// 		newParagraph.classList.add(...classNames);
-			// 		newParagraph.style.left = leftPosition;
-			// 		newParagraph.style.top = topPosition;
-			// 		newParagraph.style.position = 'absolute';
-
-			// 		paragraphs.push(newParagraph);
-			// 		currentTopPosition = topPosition;
-			// 	}
-			// });
-
-			// if (paragraphs.length > 1) {
-			// 	for (let i = 1; i < paragraphs.length; i++) {
-			// 		paragraphs[i - 1].insertAdjacentElement("afterend", paragraphs[i]);
-			// 	}
-			// }
-			// words.forEach((word: WordData) => {
-			// 	paragraphs[word.paragraph].innerHTML += ` ${word.word}`;
-			// });
-
 		});
+}
+
+function calculateParagraphWidth(paragraph: ParagraphData): number {
+	let maxX = 0;
+	let minX = 0;
+	paragraph.words.forEach((word: WordData) => {
+		const endOfWord: number = removePx(word.left) + word.width;
+		const startOfWord: number = removePx(word.left)
+		if (endOfWord > maxX) {
+			maxX = endOfWord;
+		}
+		if (startOfWord < minX) {
+			minX = startOfWord;
+		}
+	});
+
+	const width: number = maxX - minX;
+
+	return width;
+}
+
+function removePx(value: string): number {
+	return parseInt(value.replace('px', ''));
 }
 
 function extractWordDataFromParagraph(paragraph: HTMLElement): ParagraphData {
@@ -241,7 +229,9 @@ function extractWordDataFromParagraph(paragraph: HTMLElement): ParagraphData {
 			paragraph: 0, 
 			class: span.className,
 			left: span.style.left,
-			top: span.style.top
+			screenLeft: Math.round(span.getBoundingClientRect().left),
+			top: span.style.top,
+			width: span.clientWidth,
 		};
 	}).filter((word: WordData) => word.word !== '');
 

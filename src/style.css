@@ -1,17 +1,17 @@
 body {
     display: flex;
+    caret-color: #000 !important;
 }
 
 #app {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     position: relative;
 }
 
 #app p:active, #app p:focus, #app p:focus-within {
-    border: 2px solid #000;
-    outline: 2px solid #000;
+    /* border: 30px solid #000; */
+    outline: 20px solid #000;
     opacity: 1;
 }
 
