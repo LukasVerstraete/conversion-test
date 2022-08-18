@@ -38,7 +38,7 @@ async function loadCSSFiles(
 		const cssFilename: string = standardCSSFilenames[i];
 		const cssFilePath = `./${projectName}/${projectName}-web-resources/css/${cssFilename}`;
 		const cssFile: Response = await fetch(cssFilePath);
-		const cssFileText: string = (await cssFile.text()).replaceAll(new RegExp('span', 'g'), 'p');
+		const cssFileText: string = (await cssFile.text()).replaceAll(new RegExp('span', 'g'), '');
 		const cssElement: HTMLElement = document.createElement('style');
 		cssElement.innerHTML = cssFileText;
 		rootElement.appendChild(cssElement);
@@ -113,8 +113,8 @@ function createPageElements(pages: string[]): HTMLElement[] {
 }
 
 function calculatePageBounds(pageElement: HTMLElement): void {
-	let maxX: number = 0;
-	let maxY: number = 0;
+	let maxX = 0;
+	let maxY = 0;
 
 	pageElement.childNodes.forEach((child: ChildNode) => {
 		if (!(child instanceof HTMLElement)) return;
@@ -137,65 +137,170 @@ function calculatePageBounds(pageElement: HTMLElement): void {
 type WordData = {
 	word: string;
 	paragraph: number;
+	class: string;
+	left: string;
+	top: string;
+};
+
+type ParagraphData = {
+	element: HTMLElement;
+	mainClass: string;
+	words: WordData[];
 };
 
 function fixParagraphs(rootElement: HTMLElement): void {
 	Array
 		.from(rootElement.querySelectorAll('p'))
-		.forEach((paragraph: HTMLElement) => {
-			const words: WordData[] = [];
-			const spans: HTMLElement[] = Array.from(paragraph.querySelectorAll('span'));
-			const exampleSpanIndex: number = spans[1] && spans[0].innerHTML.trim() === '' ? 1 : 0;
-			const exampleSpan: HTMLElement = spans[exampleSpanIndex];
-			const classNames: string[] = exampleSpan.className.split(' ');
-			const leftPosition: string = exampleSpan.style.left;
-			const topPositionMapping: string[] = [];
-			
-			let paragraphCount: number = 0;
-			let currentTopPosition: string = exampleSpan.style.top;
+		.forEach((paragraphElement: HTMLElement) => {
+			const paragraphData: ParagraphData = extractWordDataFromParagraph(paragraphElement);
 
-			spans
-				.forEach((word: HTMLElement) => {
-					if (currentTopPosition !== word.style.top) {
-						paragraphCount++;
-						currentTopPosition = word.style.top;
-					}
-					topPositionMapping.push(word.style.top);
-					words.push({word: word.innerHTML, paragraph: paragraphCount});
-					word.remove();
+			paragraphElement.innerHTML = '';
+
+			const paragraphs: ParagraphData[] = splitUpParagraph(paragraphData);
+			console.log(paragraphs);
+			paragraphs.forEach((paragraph: ParagraphData) => {
+				paragraph.element.style.top = paragraph.words[0].top;
+				paragraph.element.style.left = paragraph.words[0].left;
+				paragraph.element.style.position = 'absolute';
+				paragraph.element.classList.add(...paragraph.mainClass.split(' '));
+
+				paragraph.words.forEach((word: WordData) => {
+					const wordElement: string = word.class === paragraph.mainClass 
+						? ` ${word.word}`
+						: ` <span class="${word.class}">${word.word}</span>`; 
+					paragraph.element.innerHTML += wordElement;
 				});
-
-			paragraph.classList.add(...classNames);
-			paragraph.style.left = leftPosition;
-			paragraph.style.top = topPositionMapping[exampleSpanIndex];
-			paragraph.style.position = 'absolute';
-
-			const paragraphs: HTMLElement[] = [paragraph];
-			currentTopPosition = topPositionMapping[exampleSpanIndex];
-
-			topPositionMapping.forEach((topPosition: string) => {
-				if (topPosition !== currentTopPosition) {
-					const newParagraph: HTMLElement = document.createElement('p');
-					newParagraph.classList.add(...classNames);
-					newParagraph.style.left = leftPosition;
-					newParagraph.style.top = topPosition;
-					newParagraph.style.position = 'absolute';
-
-					paragraphs.push(newParagraph);
-					currentTopPosition = topPosition;
-				}
 			});
 
 			if (paragraphs.length > 1) {
 				for (let i = 1; i < paragraphs.length; i++) {
-					paragraphs[i - 1].insertAdjacentElement("afterend", paragraphs[i]);
+					paragraphs[i - 1].element.insertAdjacentElement("afterend", paragraphs[i].element);
 				}
 			}
-			words.forEach((word: WordData) => {
-				paragraphs[word.paragraph].innerHTML += ` ${word.word}`;
-			});
+
+			// const words: WordData[] = [];
+			// const spans: HTMLElement[] = Array.from(paragraph.querySelectorAll('span'));
+			// const exampleSpanIndex: number = spans[1] && spans[0].innerHTML.trim() === '' ? 1 : 0;
+			// const exampleSpan: HTMLElement = spans[exampleSpanIndex];
+			// const classNames: string[] = exampleSpan.className.split(' ');
+			// const leftPosition: string = exampleSpan.style.left;
+			// const topPositionMapping: string[] = [];
+			
+			// let paragraphCount = 0;
+			// let currentTopPosition: string = exampleSpan.style.top;
+
+			// spans
+			// 	.forEach((word: HTMLElement) => {
+			// 		if (currentTopPosition !== word.style.top) {
+			// 			paragraphCount++;
+			// 			currentTopPosition = word.style.top;
+			// 		}
+			// 		topPositionMapping.push(word.style.top);
+			// 		words.push({word: word.innerHTML, paragraph: paragraphCount, class: word.className});
+			// 		word.remove();
+			// 	});
+
+			// paragraph.classList.add(...classNames);
+			// paragraph.style.left = leftPosition;
+			// paragraph.style.top = topPositionMapping[exampleSpanIndex];
+			// paragraph.style.position = 'absolute';
+
+			// const paragraphs: HTMLElement[] = [paragraph];
+			// currentTopPosition = topPositionMapping[exampleSpanIndex];
+
+			// topPositionMapping.forEach((topPosition: string) => {
+			// 	if (topPosition !== currentTopPosition) {
+			// 		const newParagraph: HTMLElement = document.createElement('p');
+			// 		newParagraph.classList.add(...classNames);
+			// 		newParagraph.style.left = leftPosition;
+			// 		newParagraph.style.top = topPosition;
+			// 		newParagraph.style.position = 'absolute';
+
+			// 		paragraphs.push(newParagraph);
+			// 		currentTopPosition = topPosition;
+			// 	}
+			// });
+
+			// if (paragraphs.length > 1) {
+			// 	for (let i = 1; i < paragraphs.length; i++) {
+			// 		paragraphs[i - 1].insertAdjacentElement("afterend", paragraphs[i]);
+			// 	}
+			// }
+			// words.forEach((word: WordData) => {
+			// 	paragraphs[word.paragraph].innerHTML += ` ${word.word}`;
+			// });
 
 		});
+}
+
+function extractWordDataFromParagraph(paragraph: HTMLElement): ParagraphData {
+	const spans: HTMLElement[] = Array.from(paragraph.querySelectorAll('span'));
+	const words: WordData[] = spans.map((span: HTMLElement) => {
+		return {
+			word: span.innerHTML.trim(), 
+			paragraph: 0, 
+			class: span.className,
+			left: span.style.left,
+			top: span.style.top
+		};
+	}).filter((word: WordData) => word.word !== '');
+
+
+	return {
+		mainClass: determineParagraphMainClass(words),
+		words: words,
+		element: paragraph
+	};
+}
+
+function determineParagraphMainClass(words: WordData[]): string {
+	const classMap: {[className: string]: number;} = {};
+	let most = 0;
+	let mostClass: string = words[0].class;
+	words.forEach((word: WordData) => {
+		if (classMap[word.class]) {
+			classMap[word.class]++;
+		} else {
+			classMap[word.class] = 1;
+		}
+
+		if (classMap[word.class] > most) {
+			most = classMap[word.class];
+			mostClass = word.class;
+		}
+	});
+
+	return mostClass;
+}
+
+function splitUpParagraph(paragraph: ParagraphData): ParagraphData[] {
+	const paragraphs: ParagraphData[] = [paragraph];
+
+	const words: WordData[] = [...paragraph.words];
+	let currentTopPosition: string = paragraph.words[0].top;
+	let currentParagraph: ParagraphData = paragraph;
+	paragraph.words = [];
+
+	words.forEach((word: WordData) => {
+		if (word.top !== currentTopPosition) {
+			const newParagraph: ParagraphData = {
+				element: document.createElement('p'),
+				mainClass: '',
+				words: [word]
+			};
+			paragraphs.push(newParagraph);
+			currentTopPosition = word.top;
+			currentParagraph = newParagraph;
+		} else {
+			currentParagraph.words.push(word);
+		}
+	});
+
+	paragraphs.forEach((paragraphData: ParagraphData) => {
+		paragraphData.mainClass = determineParagraphMainClass(paragraphData.words);
+	});
+
+	return paragraphs;
 }
 
 function makeContentEditable(rootElement: HTMLElement): void {
@@ -211,17 +316,7 @@ function showContent(rootElement: HTMLElement, pages: HTMLElement[]): void {
 		rootElement.appendChild(page);
 		calculatePageBounds(page);
 	});
-	// fixPagePositioning(rootElement);
 	fixParagraphs(rootElement);
-}
-
-function fixPagePositioning(rootElement: HTMLElement): void {
-	const pages: HTMLElement[] = Array.from(
-		rootElement.querySelectorAll('.page >div')
-	);
-	pages.forEach((page: HTMLElement, index: number) => {
-		page.style.position = 'fixed';
-	});
 }
 
 const deleteButton: HTMLButtonElement | null = document.getElementById('delete-button') as HTMLButtonElement;
@@ -234,7 +329,6 @@ if (deleteButton) {
 	} );
 
 	document.getElementById('app')?.addEventListener('click', () => {
-		console.log('test');
 		if (document.activeElement !== document.querySelector('body')) {
 			if (document.getElementById('app')?.contains(document.activeElement as HTMLElement) ){
 				activeElement = document.activeElement as HTMLElement;
@@ -252,13 +346,13 @@ if (fontSelector) {
 		if (!activeElement) {
 			return;
 		}
-		window.getComputedStyle(activeElement).setProperty('fontFamily',`${(value.target as unknown as {value: string}).value} !important`);
-		console.log(activeElement.style);
+		activeElement.style.fontFamily = (value.target as HTMLSelectElement).value;
+
 
 	} );
 }
 
-loadPages('app', 'CHNL60L_03_p59-90', 1);
+loadPages('app', 'CHNL60L_03_p59-90', 2);
 
 
 export {};
