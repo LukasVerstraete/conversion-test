@@ -1,24 +1,25 @@
 body {
-    display: flex;
-    caret-color: #000 !important;
+	display: flex;
 }
 
 #app {
-    display: flex;
-    justify-content: center;
-    position: relative;
+	display: flex;
+	justify-content: center;
+	position: relative;
 }
 
-#app p:active, #app p:focus, #app p:focus-within {
-    /* border: 30px solid #000; */
-    outline: 20px solid #000;
-    opacity: 1;
+#app p:active,
+#app p:focus,
+#app p:focus-within {
+	/* border: 30px solid #000; */
+	outline: 20px solid #000;
+	opacity: 1;
 }
 
 .controls {
-    padding: 1.5rem;
+	padding: 1.5rem;
 }
 
-.page {
-    border: 1px solid black;
-}
+/* .page {
+	border: 1px solid black;
+} */
