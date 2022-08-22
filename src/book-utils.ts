@@ -14,6 +14,8 @@ export async function loadPages(
 		document.getElementById(rootElementId);
 	if (rootElement === null) return;
 
+	clearStyles();
+
 	rootElement.innerHTML = '';
 
 	await loadScripts(rootElement, project);
@@ -24,9 +26,13 @@ export async function loadPages(
 
 	showContent(rootElement, pageElement);
 	makeContentEditable(rootElement);
+}
 
-	rootElement.querySelectorAll('img').forEach((img: HTMLImageElement) => {
-		console.log(img);
+function clearStyles(): void {
+	document.querySelector('head')!.querySelectorAll('style').forEach((element: HTMLStyleElement) => {
+		if (!element.attributes.getNamedItem('type')) {
+			element.remove();
+		}
 	});
 }
 
@@ -42,8 +48,12 @@ async function loadCSSFiles(
 			new RegExp('span', 'g'),
 			''
 		);
+		const urlFixedFileText: string = cssFileText.replaceAll(
+			new RegExp('../image', 'g'),
+			`../${projectName}/${projectName}-web-resources/image/`
+		);
 		const cssElement: HTMLElement = document.createElement('style');
-		cssElement.innerHTML = cssFileText;
+		cssElement.innerHTML = urlFixedFileText;
 		rootElement.appendChild(cssElement);
 	}
 }
@@ -91,6 +101,8 @@ function getBodyContentText(projectName: string, htmlText: string): string {
 }
 
 function fixImageLinks(projectName: string, htmlText: string): string {
+	// console.log(htmlText.fi);
+
 	return htmlText.replaceAll(
 		new RegExp(`${projectName}-web-resources/image`, 'g'),
 		`${projectName}/${projectName}-web-resources/image/`
@@ -159,8 +171,7 @@ function fixParagraphs(rootElement: HTMLElement): void {
 			const paragraphData: ParagraphData =
 				extractWordDataFromParagraph(paragraphElement);
 
-			const width: string = calculateParagraphWidth(paragraphData) + 'px';
-			console.log(width);
+			// const width: string = calculateParagraphWidth(paragraphData) + 'px';
 
 			paragraphElement.innerHTML = '';
 

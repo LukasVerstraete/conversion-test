@@ -8,6 +8,8 @@ export function initPageSelectorControls(): void {
 	const pageSelector: HTMLInputElement = document.getElementById(
 		'page-selector'
 	) as HTMLInputElement;
+	pageSelector.value = '0';
+	pageSelector.min = '0';
 	const loadButton: HTMLButtonElement = document.getElementById(
 		'load-button'
 	) as HTMLButtonElement;

@@ -94,7 +94,6 @@ function buildFontRule(fontFamily, fontData, fontStyle, fontWeight, fontStretch)
 	}
 }
 
-const headElement = document.querySelector("head");
 
 for (var i in dataArray)
 {
@@ -102,7 +101,7 @@ for (var i in dataArray)
 	{
 		const styleElement = document.createElement("style");
 		styleElement.innerHTML = buildFontRule(nameArray[i], dataArray[i], fontStyle[i][j], fontWeight[i], fontStretch[i]);
-		headElement.appendChild(styleElement);
+		document.querySelector("head").appendChild(styleElement);
 		// document.write("<style>" + buildFontRule(nameArray[i], dataArray[i], fontStyle[i][j], fontWeight[i], fontStretch[i]) + "</style>");
 	}
 }
