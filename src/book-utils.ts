@@ -171,7 +171,7 @@ function fixParagraphs(rootElement: HTMLElement): void {
 			const paragraphData: ParagraphData =
 				extractWordDataFromParagraph(paragraphElement);
 
-			// const width: string = calculateParagraphWidth(paragraphData) + 'px';
+			const width: string = calculateParagraphWidth(paragraphData) + 'px';
 
 			paragraphElement.innerHTML = '';
 
@@ -180,25 +180,39 @@ function fixParagraphs(rootElement: HTMLElement): void {
 				return;
 			}
 
-			// paragraphData.element.style.top = paragraphData.words[0].top;
-			// paragraphData.element.style.left = paragraphData.words[0].left;
-			// paragraphData.element.style.position = 'absolute';
-			// paragraphData.element.style.maxWidth = width;
-			// paragraphData.element.style.whiteSpace = 'normal';
-			// paragraphData.element.classList.add(
-			// 	...paragraphData.mainClass.split(' ')
-			// );
+			paragraphData.element.style.top = paragraphData.words[0].top;
+			paragraphData.element.style.left = paragraphData.words[0].left;
+			paragraphData.element.style.position = 'absolute';
+			paragraphData.element.style.maxWidth = width;
+			paragraphData.element.style.whiteSpace = 'normal';
+			paragraphData.element.classList.add(
+				...paragraphData.mainClass.split(' ')
+			);
 
-			// paragraphData.words.forEach((word: WordData) => {
-			// 	const wordElement: string =
-			// 		word.class === paragraphData.mainClass
-			// 			? ` ${word.word}`
-			// 			: ` <span class="${word.class}">${word.word}</span>`;
-			// 	paragraphData.element.innerHTML += wordElement;
-			// });
+			paragraphData.words.forEach((word: WordData) => {
+				const wordElement: string =
+					word.class === paragraphData.mainClass
+						? ` ${word.word}`
+						: ` <span class="${word.class}">${word.word}</span>`;
+				paragraphData.element.innerHTML += wordElement;
+			});
+		}
+	);
+}
 
+function fixAndSplitParagraphs(rootElement: HTMLElement): void {
+	Array.from(rootElement.querySelectorAll('p')).forEach(
+		(paragraphElement: HTMLElement) => {
+			const paragraphData: ParagraphData =
+				extractWordDataFromParagraph(paragraphElement);
+
+			paragraphElement.innerHTML = '';
+
+			if (!paragraphData.words.length) {
+				paragraphElement.remove();
+				return;
+			}
 			const paragraphs: ParagraphData[] = splitUpParagraph(paragraphData);
-			// console.log(paragraphs);
 			paragraphs.forEach((paragraph: ParagraphData) => {
 				paragraph.element.style.top = paragraph.words[0].top;
 				paragraph.element.style.left = paragraph.words[0].left;
@@ -341,5 +355,6 @@ function showContent(rootElement: HTMLElement, page: HTMLElement): void {
 	rootElement.appendChild(page);
 	calculatePageBounds(page);
 	// });
-	fixParagraphs(rootElement);
+	// fixParagraphs(rootElement);
+	fixAndSplitParagraphs(rootElement);
 }

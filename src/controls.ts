@@ -32,7 +32,7 @@ function addBookSelectorEvents(
 	bookSelector: HTMLSelectElement,
 	pageSelect: HTMLInputElement
 ): void {
-	bookSelector.addEventListener('change', (event: Event) => {
+	bookSelector.addEventListener('change', () => {
 		const book: BookData | undefined = books.find(
 			(b) => b.title === bookSelector.value
 		);
