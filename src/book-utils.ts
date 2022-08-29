@@ -1,3 +1,5 @@
+import { removePx } from './helpers';
+
 const standardCSSFilenames: string[] = [
 	'idGeneratedStyles.css'
 	// 'myCustomCSS.css'
@@ -29,11 +31,14 @@ export async function loadPages(
 }
 
 function clearStyles(): void {
-	document.querySelector('head')!.querySelectorAll('style').forEach((element: HTMLStyleElement) => {
-		if (!element.attributes.getNamedItem('type')) {
-			element.remove();
-		}
-	});
+	document
+		.querySelector('head')!
+		.querySelectorAll('style')
+		.forEach((element: HTMLStyleElement) => {
+			if (!element.attributes.getNamedItem('type')) {
+				element.remove();
+			}
+		});
 }
 
 async function loadCSSFiles(
@@ -259,10 +264,6 @@ function calculateParagraphWidth(paragraph: ParagraphData): number {
 	const width: number = maxX - minX;
 
 	return width;
-}
-
-function removePx(value: string): number {
-	return parseInt(value.replace('px', ''));
 }
 
 function extractWordDataFromParagraph(paragraph: HTMLElement): ParagraphData {

@@ -15,17 +15,29 @@
 	<body>
 		<div class="controls">
 			<button id="delete-button" class="waves-effect btn">Delete</button>
-			<div class="">
+			<div>
 				<select id="font">
 					<option value="serif">Serif</option>
 					<option value="sans-serif">Sans-Serif</option>
 				</select>
 			</div>
-		</div>
-		<div id="page-selector-controls">
-			<select id="book-selector"></select>
-			<input type="number" id="page-selector" />
-			<button id="load-button">Load page</button>
+			<div id="page-selector-controls">
+				<h4>Pagina selector</h4>
+				<div>
+					<label for="book-selector">Boek</label>
+					<select id="book-selector"></select>
+				</div>
+				<div>
+					<label for="page-selector">Pagina</label>
+					<input type="number" id="page-selector" />
+				</div>
+				<button id="load-button">Load page</button>
+			</div>
+			<div id="block-creator">
+				<h4>Blok editor</h4>
+				<button id="block-creator-button">Blok maken</button>
+				<button id="block-editor-toggle">Toggle editor</button>
+			</div>
 		</div>
 		<div id="app"></div>
 		<script type="module" src="/src/main.ts"></script>

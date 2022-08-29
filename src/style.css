@@ -8,18 +8,56 @@ body {
 	position: relative;
 }
 
-#app p:active,
-#app p:focus,
-#app p:focus-within {
+#app .selected {
 	/* border: 30px solid #000; */
-	outline: 20px solid #000;
+	outline: 0.2em solid #000;
 	opacity: 1;
 }
 
 .controls {
 	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
+.controls #page-selector-controls,
+.controls #block-creator {
+	border: 1px solid grey;
+	padding: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.controls #block-creator.active {
+	border-color: red;
+}
+
+.controls #block-creator > h4::after {
+	content: '(disabled)';
+	margin-left: 0.5rem;
+}
+
+.controls #block-creator.active > h4::after {
+	content: '(enabled)';
+	margin-left: 0.5rem;
+}
+
+.controls #page-selector-controls h4,
+.controls #block-creator h4 {
+	margin: 0;
+}
+
+.controls #page-selector-controls > div {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.controls #page-selector-controls > div input,
+.controls #page-selector-controls > div select {
+	flex-grow: 1;
+}
 /* .page {
 	border: 1px solid black;
 } */
